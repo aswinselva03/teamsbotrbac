@@ -149,27 +149,11 @@ const setup = (app: Application) => {
 
       if (!token) {
         // No token found — send OAuthCard to start sign-in flow
-        // const oauthCard = CardFactory.oauthCard({
-        //   text :'Please sign in to continue',
-        //   connectionName :'teamsbotsso',
-        //   title: 'login',
-        //   tokenExchangeResource: {
-        //     id: context.activity.from.aadObjectId,
-        //   },
-        // });
-        const oauthCard = CardFactory.oauthCard(
-          'teamsbotsso', // connectionName (required)
-          'Login', // title (required)
-          'Please sign in to continue', // text (optional)
-          undefined, // link (optional, usually undefined for Teams)
-          {id: context.activity.from.aadObjectId} // tokenExchangeResource (optional)
-        );
-        await context.sendActivity({attachments: [oauthCard]});
-        // await context.sendActivity({
-        //   attachments: [
-        //     CardFactory.oauthCard('teamsbotsso', 'Please sign in to continue'),
-        //   ],
-        // });
+        await context.sendActivity({
+          attachments: [
+            CardFactory.oauthCard('teamsbotsso', 'Please sign in to continue'),
+          ],
+        });
         return; // stop further processing until user signs in
       }
 
