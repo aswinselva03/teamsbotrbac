@@ -1,0 +1,53 @@
+{
+  "$schema": "https://developer.microsoft.com/en-us/json-schemas/teams/v1.16/MicrosoftTeams.schema.json",
+  "manifestVersion": "1.16",
+  "version": "1.0.1",
+  "id": "${{TEAMS_APP_ID}}",
+  "packageName": "com.microsoft.teams.demo.openai.search.azure.aswin",
+  "developer": {
+    "name": "AI Factory",
+    "websiteUrl": "https://github.com/Azure-Samples/azure-search-openai-demo",
+    "privacyUrl": "https://github.com/Azure-Samples/azure-search-openai-demo",
+    "termsOfUseUrl": "https://github.com/Azure-Samples/azure-search-openai-demo"
+  },
+  "icons": {
+    "color": "color.png",
+    "outline": "outline.png"
+  },
+  "name": {
+    "short": "Teams GPT RAG Integration",
+    "full": "Integrate GPT RAG with Teams bot"
+  },
+  "description": {
+    "short": "Ask bermuda ferries and bus route",
+    "full": "Ferry and bus route  and timings from bermuda shorelink"
+  },
+  "accentColor": "#FFFFFF",
+  "webApplicationInfo": {
+    "id": "${{BOT_ID}}",
+    "resource": "api://${{BOT_ID}}"
+  },
+  "bots": [
+    {
+      "botId": "${{BOT_ID}}",
+      "scopes": ["personal"],
+      "supportsFiles": false,
+      "isNotificationOnly": false,
+      "commandLists": [
+        {
+          "scopes": ["personal"],
+          "commands": [
+            {
+              "title": "New chat",
+              "description": "Start a new chat with your data"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "composeExtensions": [],
+  "staticTabs": [],
+  "permissions": ["identity", "messageTeamMembers"],
+  "validDomains": []
+}
