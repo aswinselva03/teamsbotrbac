@@ -1,4 +1,4 @@
-import {ActivityTypes, AdaptiveCardInvokeValue, TurnContext} from 'botbuilder';
+import {ActivityTypes, AdaptiveCardInvokeValue, TurnContext, CardFactory} from 'botbuilder';
 import {AdaptiveCard, Application} from '@microsoft/teams-ai';
 import {ApplicationTurnState} from '..';
 import {
@@ -20,6 +20,7 @@ import {ChatTurn} from '../api';
 
 import {ActionData, ResponseCard} from '../shared/types';
 import {constants} from '../shared/constants';
+const oauthCard = CardFactory.oauthCard('teamsbotsso');
 
 // Function to convert HTML to Markdown
 function convertHtmlToMarkdown(html) {
@@ -92,19 +93,55 @@ const setup = (app: Application) => {
     }
   );
 
+// inside your setup(app) function or similar:
+
+app.activity(ActivityTypes.Invoke, async (context: TurnContext, state: ApplicationTurnState) => {
+  if (context.activity.name === 'signin/tokenExchange') {
+    console.log('Received signin/tokenExchange invoke');
+
+    // This will have the token exchange info populated by the middleware
+    const tokenExchangeState = context.turnState.get('TeamsSSOTokenExchange');
+
+    if (tokenExchangeState) {
+      console.log('Token exchange successful:', tokenExchangeState);
+
+      // You can now get the token from the tokenExchangeState
+      const token = tokenExchangeState.token;
+
+      await context.sendActivity('Token exchange successful! You are signed in.');
+      // Now you can save the token in state or use it as needed.
+    } else {
+      console.log('Token exchange state is missing or invalid');
+      // Respond with a failure to Teams to retry token exchange if needed
+      await context.sendActivity({
+        type: 'invokeResponse',
+        value: {
+          status: 412, // Precondition Failed - token exchange failed
+          body: 'Token exchange failed'
+        }
+      });
+      return; // stop processing
+    }
+  }
+});
   app.activity(
     ActivityTypes.Message,
     async (context: TurnContext, state: ApplicationTurnState) => {
       const {text} = context.activity;
-      // const tokenExchangeState = context.turnState.get('TeamsSSOTokenExchange');
-      // console.log(`token exchange state ${tokenExchangeState}`)
+      const tokenExchangeState = context.turnState.get('TeamsSSOTokenExchange');
+      console.log(`token exchange state ${tokenExchangeState}`)
       // const token = tokenExchangeState?.token;
-      const tokenResponse = await context.adapter.getUserToken(context, 'teamsbotsso');
+      // const tokenResponse = await context.adapter.getUserToken(context, 'teamsbotsso');
+// const tokenExchangeState = context.turnState.get('TeamsSSOTokenExchange');
+    let token = tokenExchangeState?.token;
 
-      if (!tokenResponse) {
-        await context.sendActivity('Could not retrieve access token.');
-        return;
-      }
+    if (!token) {
+      // No token found — send OAuthCard to start sign-in flow
+      await context.sendActivity({
+        attachments: [CardFactory.oauthCard(connectionName)]
+      });
+      return; // stop further processing until user signs in
+    }
 
       await context.sendActivity(`Access token: ${tokenResponse}`);
       // await processMessage(text, context, state);
