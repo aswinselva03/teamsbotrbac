@@ -96,16 +96,17 @@ const setup = (app: Application) => {
     ActivityTypes.Message,
     async (context: TurnContext, state: ApplicationTurnState) => {
       const {text} = context.activity;
-      const tokenExchangeState = context.turnState.get('TeamsSSOTokenExchange');
-      console.log(`token exchange state ${tokenExchangeState}`)
-      const token = tokenExchangeState?.token;
+      // const tokenExchangeState = context.turnState.get('TeamsSSOTokenExchange');
+      // console.log(`token exchange state ${tokenExchangeState}`)
+      // const token = tokenExchangeState?.token;
+      const tokenResponse = await context.adapter.getUserToken(context, 'teamsbotsso');
 
-      if (!token) {
+      if (!tokenResponse) {
         await context.sendActivity('Could not retrieve access token.');
         return;
       }
 
-      await context.sendActivity(`Access token: ${token}`);
+      await context.sendActivity(`Access token: ${tokenResponse}`);
       // await processMessage(text, context, state);
     }
   );
