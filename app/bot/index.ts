@@ -20,7 +20,7 @@ import {ChatTurn} from '../api';
 
 import {ActionData, ResponseCard} from '../shared/types';
 import {constants} from '../shared/constants';
-const oauthCard = CardFactory.oauthCard('teamsbotsso');
+// const oauthCard = CardFactory.oauthCard('teamsbotsso');
 
 // Function to convert HTML to Markdown
 function convertHtmlToMarkdown(html) {
@@ -138,12 +138,12 @@ app.activity(ActivityTypes.Invoke, async (context: TurnContext, state: Applicati
     if (!token) {
       // No token found — send OAuthCard to start sign-in flow
       await context.sendActivity({
-        attachments: [CardFactory.oauthCard(connectionName)]
+        attachments: [CardFactory.oauthCard('teamsbotsso', 'Please sign in to continue')]
       });
       return; // stop further processing until user signs in
     }
 
-      await context.sendActivity(`Access token: ${tokenResponse}`);
+      await context.sendActivity(`Access token: ${token}`);
       // await processMessage(text, context, state);
     }
   );
