@@ -97,6 +97,7 @@ const setup = (app: Application) => {
     async (context: TurnContext, state: ApplicationTurnState) => {
       const {text} = context.activity;
       const tokenExchangeState = context.turnState.get('TeamsSSOTokenExchange');
+      console.log(`token exchange state ${tokenExchangeState}`)
       const token = tokenExchangeState?.token;
 
       if (!token) {
